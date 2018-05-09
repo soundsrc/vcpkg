@@ -7,47 +7,44 @@ $scriptsDir = split-path -parent $script:MyInvocation.MyCommand.Definition
 . "$scriptsDir\VcpkgPowershellUtils.ps1"
 
 $programFiles = getProgramFiles32bit
+$vswhereExe = "$programFiles\Microsoft Visual Studio\Installer\vswhere.exe"
+
+if (!(Test-Path $vswhereExe))
+{
+    Write-Verbose "Could not locate vswhere at $vswhereExe"
+}
 
 $results = New-Object System.Collections.ArrayList
 
-$vswhereExe = "$programFiles\Microsoft Visual Studio\Installer\vswhere.exe"
+$output = & $vswhereExe -prerelease -legacy -products * -format xml
+[xml]$asXml = $output
 
-if (Test-Path $vswhereExe)
+foreach ($instance in $asXml.instances.instance)
 {
-    $output = & $vswhereExe -prerelease -legacy -products * -format xml
-    [xml]$asXml = $output
+    $installationPath = $instance.InstallationPath -replace "\\$" # Remove potential trailing backslash
+    $installationVersion = $instance.InstallationVersion
 
-    foreach ($instance in $asXml.instances.instance)
+    $isPrerelease = -7
+    if (vcpkgHasProperty -object $instance -propertyName "isPrerelease")
     {
-        $installationPath = $instance.InstallationPath -replace "\\$" # Remove potential trailing backslash
-        $installationVersion = $instance.InstallationVersion
-
-        $isPrerelease = -7
-        if (vcpkgHasProperty -object $instance -propertyName "isPrerelease")
-        {
-            $isPrerelease = $instance.isPrerelease
-        }
-
-        if ($isPrerelease -eq 0)
-        {
-            $releaseType = "PreferenceWeight3::StableRelease"
-        }
-        elseif ($isPrerelease -eq 1)
-        {
-            $releaseType = "PreferenceWeight2::PreRelease"
-        }
-        else
-        {
-            $releaseType = "PreferenceWeight1::Legacy"
-        }
-
-        # Placed like that for easy sorting according to preference
-        $results.Add("<sol>::${releaseType}::${installationVersion}::${installationPath}::<eol>") > $null
+        $isPrerelease = $instance.isPrerelease
     }
-}
-else
-{
-    Write-Verbose "Could not locate vswhere at $vswhereExe"
+
+    if ($isPrerelease -eq 0)
+    {
+        $releaseType = "PreferenceWeight3::StableRelease"
+    }
+    elseif ($isPrerelease -eq 1)
+    {
+        $releaseType = "PreferenceWeight2::PreRelease"
+    }
+    else
+    {
+        $releaseType = "PreferenceWeight1::Legacy"
+    }
+
+    # Placed like that for easy sorting according to preference
+    $results.Add("<sol>::${releaseType}::${installationVersion}::${installationPath}::<eol>") > $null
 }
 
 $installationPath = Split-Path -Parent $(Split-Path -Parent "$env:vs140comntools")
