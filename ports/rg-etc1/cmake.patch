@@ -1,0 +1,10 @@
+diff -urN rg-etc1-701f354e19f69f2b7f79cc5c6fdde870467f01bb/CMakeLists.txt rg-etc1/CMakeLists.txt
+--- rg-etc1-701f354e19f69f2b7f79cc5c6fdde870467f01bb/CMakeLists.txt	1969-12-31 16:00:00.000000000 -0800
++++ rg-etc1/CMakeLists.txt	2018-03-19 11:49:31.000000000 -0700
+@@ -0,0 +1,6 @@
++cmake_minimum_required (VERSION 2.6)
++project(rg-etc1)
++add_library(rg-etc1 STATIC rg_etc1.cpp)
++install(TARGETS rg-etc1 DESTINATION "lib")
++install(FILES rg_etc1.h DESTINATION "include")
++
