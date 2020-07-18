@@ -1,0 +1,13 @@
+diff -ur collada-dom-2.4.0/CMakeLists.txt collada-dom-2.4.0-2/CMakeLists.txt
+--- collada-dom-2.4.0/CMakeLists.txt	2012-06-01 04:52:21.000000000 -0700
++++ collada-dom-2.4.0-2/CMakeLists.txt	2018-11-10 15:06:27.000000000 -0800
+@@ -127,7 +127,7 @@
+ 
+ if( APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+   # apple doesn't have 64bit versions of file opening functions, so add them
+-  add_definitions("-Dfopen64=fopen -Dfseeko64=fseeko -Dfseek64=fseek -Dftell64=ftell -Dftello64=ftello")
++  add_definitions(-Dfopen64=fopen -Dfseeko64=fseeko -Dfseek64=fseek -Dftell64=ftell -Dftello64=ftello)
+ endif()
+ 
+ set(COLLADA_DOM_INCLUDE_INSTALL_DIR "include/collada-dom${COLLADA_DOM_SOVERSION}")
+
