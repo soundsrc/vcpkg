@@ -1,0 +1,38 @@
+From 4ba445d7b91423e31ee127ee7b6ebb2800436795 Mon Sep 17 00:00:00 2001
+From: Sound <sound@sagaforce.com>
+Date: Fri, 3 May 2019 22:26:08 -0700
+Subject: [PATCH 2/3] Setup install target and public headers.
+
+---
+ CMakeLists.txt | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 49421a9..f1283ba 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -70,10 +70,20 @@ folderize_sources(msdfgen_SOURCES ${CMAKE_SOURCE_DIR})
+ 
+ add_library(lib_msdfgen ${msdfgen_SOURCES} ${msdfgen_HEADERS})
+ set_target_properties(lib_msdfgen PROPERTIES OUTPUT_NAME msdfgen)
+-target_link_libraries(lib_msdfgen ${FREETYPE_LIBRARIES})
++set_target_properties(lib_msdfgen PROPERTIES PUBLIC_HEADER "msdfgen.h;msdfgen-ext.h")
+ 
+ # Build the executable
+ 
+ add_executable(msdfgen main.cpp msdfgen.h msdfgen-ext.h)
+ target_compile_definitions(msdfgen PRIVATE MSDFGEN_STANDALONE)
+ target_link_libraries(msdfgen lib_msdfgen freetype z)
++
++install(TARGETS msdfgen lib_msdfgen
++	RUNTIME DESTINATION bin
++	LIBRARY DESTINATION lib
++	ARCHIVE DESTINATION lib
++	PUBLIC_HEADER DESTINATION include/msdfgen)
++install(DIRECTORY core/ DESTINATION include/msdfgen/core FILES_MATCHING PATTERN "*.h")
++install(DIRECTORY core/ DESTINATION include/msdfgen/core FILES_MATCHING PATTERN "*.hpp")
++install(DIRECTORY ext/ DESTINATION include/msdfgen/ext FILES_MATCHING PATTERN "*.h")
++
+-- 
+2.20.1 (Apple Git-117)
+

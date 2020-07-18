@@ -1,0 +1,36 @@
+From 186f592d4178e3016972989b6034ee80c30a58f9 Mon Sep 17 00:00:00 2001
+From: Sound <sound@sagaforce.com>
+Date: Fri, 3 May 2019 22:26:18 -0700
+Subject: [PATCH 3/3] Typename build fix.
+
+---
+ core/msdfgen.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/msdfgen.cpp b/core/msdfgen.cpp
+index fcc46c3..708e1b7 100644
+--- a/core/msdfgen.cpp
++++ b/core/msdfgen.cpp
+@@ -55,7 +55,7 @@ void generateDistanceField(Bitmap<typename DistancePixelConversion<typename Cont
+ 
+                 for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour) {
+                     if (!contour->edges.empty()) {
+-                        ContourCombiner::EdgeSelectorType edgeSelector(p);
++                        typename ContourCombiner::EdgeSelectorType edgeSelector(p);
+ 
+                         const EdgeSegment *prevEdge = contour->edges.size() >= 2 ? *(contour->edges.end()-2) : *contour->edges.begin();
+                         const EdgeSegment *curEdge = contour->edges.back();
+@@ -70,8 +70,8 @@ void generateDistanceField(Bitmap<typename DistancePixelConversion<typename Cont
+                     }
+                 }
+ 
+-                ContourCombiner::DistanceType distance = contourCombiner.distance();
+-                output(x, row) = DistancePixelConversion<ContourCombiner::DistanceType>::convert(distance, range);
++                typename ContourCombiner::DistanceType distance = contourCombiner.distance();
++                output(x, row) = DistancePixelConversion<typename ContourCombiner::DistanceType>::convert(distance, range);
+             }
+         }
+     }
+-- 
+2.20.1 (Apple Git-117)
+
